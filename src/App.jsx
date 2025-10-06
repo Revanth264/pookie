@@ -83,7 +83,7 @@ export default function PeakimeSite() {
           As we grow, our vision extends beyond bringing global titles to India. We plan to <b>develop original Indian animated universes</b>, crafted with the same heart, depth, and discipline that define the world’s most beloved studios.
         </Block>
         <Block>
-          Peakime stands for <b>stories without borders</b> — a bridge between creators and audiences, cultures and emotions, dreams and reality. We are here to make animation in India not just a genre, but a way of life.
+          Peakime stands for <b>"Stories Beyond Borders"</b> — a bridge between creators and audiences, cultures and emotions, dreams and reality. We are here to make animation in India not just a genre, but a way of life.
         </Block>
       </AnimatedSection>
 
