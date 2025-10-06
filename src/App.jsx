@@ -3,13 +3,8 @@ import { motion, useScroll, useTransform } from "framer-motion";
 
 /**
  * Peakime.com — Single-Page Premium Website (React + Tailwind + Framer Motion)
- * - Centered headings
- * - Smooth scroll nav with working anchors
- * - Apple‑style parallax hero + section fades
- * - Back‑to‑Top button
- * - Dark / Light theme toggle
- * - Simple contact form (works with mailto or Netlify if enabled)
- * - All brand copy included verbatim from the provided master text
+ * UPDATED: Founder name -> MR Animer; Emails -> sales@peakime.com & support@peakime.com
+ * All email actions open Gmail Compose (not mailto:)
  */
 
 export default function PeakimeSite() {
@@ -126,7 +121,7 @@ export default function PeakimeSite() {
         <Block>
           Thank you for being part of it. Let’s build this world together.
         </Block>
-        <div className="mt-6 text-yellow-400">– Revanth Sarupuru<br/>Founder & Co-Director, PeakCraft Studios Private Limited<br/>📧 revanthchowdhary264@gmail.com</div>
+        <div className="mt-6 text-yellow-400">– MR Animer<br/>Founder & Co-Director, PeakCraft Studios Private Limited<br/>📧 <GmailLink to="sales@peakime.com" label="sales@peakime.com" /></div>
       </AnimatedSection>
 
       <AnimatedSection id="future" title="Our Future">
@@ -191,7 +186,7 @@ export default function PeakimeSite() {
         <Block>
           If you represent a studio or rights holder interested in working with us, we’d love to connect. Reach out to our licensing team and let’s build something lasting together.
         </Block>
-        <div className="mt-4">📧 <b>Email:</b> revanthchowdhary264@gmail.com<br/>🏢 <b>Company:</b> PeakCraft Studios Private Limited<br/>🌐 <b>www.peakime.com</b></div>
+        <div className="mt-4">📧 <b>Email:</b> <GmailLink to="sales@peakime.com" label="sales@peakime.com" /><br/>🏢 <b>Company:</b> PeakCraft Studios Private Limited<br/>🌐 <b>www.peakime.com</b></div>
       </AnimatedSection>
 
       <AnimatedSection id="legal" title="Legal & Licensing Notice">
@@ -213,7 +208,7 @@ export default function PeakimeSite() {
         <Block>
           If you’re passionate about anime, donghua, or the power of visual storytelling, we’d love to hear from you.
         </Block>
-        <div className="mt-4">📧 <b>Send your portfolio or resume to:</b> revanthchowdhary264@gmail.com<br/>🏢 <b>PeakCraft Studios Private Limited</b><br/>🌐 <b>www.peakime.com</b></div>
+        <div className="mt-4">📧 <b>Send your portfolio or resume to:</b> <GmailLink to="sales@peakime.com" label="sales@peakime.com" /><br/>🏢 <b>PeakCraft Studios Private Limited</b><br/>🌐 <b>www.peakime.com</b></div>
       </AnimatedSection>
 
       <AnimatedSection id="community" title="Community / Fan Hub (Coming Soon)">
@@ -229,7 +224,7 @@ export default function PeakimeSite() {
         <Block>
           We’re building a space where independent artists, studios, writers, and animators can collaborate, share ideas, and create together.
         </Block>
-        <div className="mt-4">📧 <b>Collaboration Contact:</b> revanthchowdhary264@gmail.com<br/>🏢 <b>PeakCraft Studios Private Limited</b><br/>🌐 <b>www.peakime.com</b></div>
+        <div className="mt-4">📧 <b>Collaboration Contact:</b> <GmailLink to="sales@peakime.com" label="sales@peakime.com" /><br/>🏢 <b>PeakCraft Studios Private Limited</b><br/>🌐 <b>www.peakime.com</b></div>
       </AnimatedSection>
 
       <AnimatedSection id="contact" title="Contact & Partnerships">
@@ -239,7 +234,7 @@ export default function PeakimeSite() {
         <div className="mt-6">
           <ContactForm />
           <div className="mt-6 text-gray-300">
-            Or write to us directly: <b>revanthchowdhary264@gmail.com</b>
+            Or write to us directly: <b><GmailLink to="sales@peakime.com" label="sales@peakime.com" /></b> &nbsp;|&nbsp; <b><GmailLink to="support@peakime.com" label="support@peakime.com" /></b>
           </div>
         </div>
       </AnimatedSection>
@@ -249,7 +244,7 @@ export default function PeakimeSite() {
           Peakime represents a new wave of animation culture in India — introducing licensed anime and donghua to audiences and shaping the foundation for future Indian originals.
         </Block>
         <Block>
-          For interviews, press releases, collaborations, or access to official brand materials, contact: 📧 <b>Media Contact:</b> revanthchowdhary264@gmail.com
+          For interviews, press releases, collaborations, or access to official brand materials, contact: 📧 <b>Media Contact:</b> <GmailLink to="sales@peakime.com" label="sales@peakime.com" />
         </Block>
       </AnimatedSection>
 
@@ -284,7 +279,10 @@ export default function PeakimeSite() {
           Peakime is owned and operated by <b>PeakCraft Studios Private Limited</b>, an Indian entertainment company dedicated to building the future of animation through licensed content, cultural collaboration, and original storytelling.
         </p>
         <p className="mt-3">© 2025 PeakCraft Studios Private Limited. All Rights Reserved. <br/>Peakime and its logo are trademarks of PeakCraft Studios Pvt. Ltd.</p>
-        <p className="mt-3">📧 Email: <b>Support@gmail.com</b> &nbsp;|&nbsp; 🌐 Website: <b>www.peakime.com</b></p>
+        <p className="mt-3">📧 Email:&nbsp;
+          <b><GmailLink to="support@peakime.com" label="support@peakime.com" /></b>
+          &nbsp;|&nbsp; 🌐 Website: <b>www.peakime.com</b>
+        </p>
       </footer>
 
       {/* BACK TO TOP BUTTON */}
@@ -326,16 +324,44 @@ function Block({ children }) {
   return <p className="max-w-5xl mx-auto text-gray-300">{children}</p>;
 }
 
+/** Gmail Compose helper
+ * Opens Gmail compose window with prefilled fields.
+ * Usage: <GmailLink to="sales@peakime.com" label="sales@peakime.com" subject="Hello" body="Message"/>
+ */
+function GmailLink({ to, cc, bcc, subject = "", body = "", label }) {
+  const params = new URLSearchParams();
+  if (to) params.set("to", to);
+  if (cc) params.set("cc", cc);
+  if (bcc) params.set("bcc", bcc);
+  if (subject) params.set("su", subject);
+  if (body) params.set("body", body);
+  const href = `https://mail.google.com/mail/?view=cm&fs=1&${params.toString()}`;
+  return (
+    <a href={href} target="_blank" rel="noreferrer" className="underline hover:text-yellow-300">
+      {label || to}
+    </a>
+  );
+}
+
 function ContactForm() {
-  // Mailto fallback (works without backend). Replace with Netlify by adding data-netlify="true" and a hidden input name="form-name"
+  // Gmail compose fallback (works without backend)
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
 
-  const mailto = `mailto:revanthchowdhary264@gmail.com?subject=Peakime%20Website%20Inquiry%20from%20${encodeURIComponent(name)}&body=${encodeURIComponent(message + "\n\nFrom: " + name + " (" + email + ")")}`;
+  const subject = `Peakime Website Inquiry from ${name || "Visitor"}`;
+  const body = `${message}\n\nFrom: ${name} (${email})`;
+  const composeHref = (() => {
+    const params = new URLSearchParams();
+    params.set("to", "sales@peakime.com");
+    params.set("bcc", "support@peakime.com");
+    if (subject) params.set("su", subject);
+    if (body) params.set("body", body);
+    return `https://mail.google.com/mail/?view=cm&fs=1&${params.toString()}`;
+  })();
 
   return (
-    <form className="max-w-3xl mx-auto grid grid-cols-1 gap-4 text-left">
+    <form className="max-w-3xl mx-auto grid grid-cols-1 gap-4 text-left" onSubmit={(e)=>e.preventDefault()}>
       <label className="text-sm text-gray-400">Name
         <input value={name} onChange={e=>setName(e.target.value)} className="w-full mt-1 bg-black border border-white/20 rounded px-3 py-2 focus:outline-none focus:border-yellow-400" placeholder="Your name" />
       </label>
@@ -346,9 +372,10 @@ function ContactForm() {
         <textarea value={message} onChange={e=>setMessage(e.target.value)} rows={5} className="w-full mt-1 bg-black border border-white/20 rounded px-3 py-2 focus:outline-none focus:border-yellow-400" placeholder="Tell us how you'd like to collaborate" />
       </label>
       <div className="flex gap-3 pt-2">
-        <a href={mailto} className="bg-yellow-400 text-black px-5 py-3 rounded font-semibold hover:bg-yellow-300">Send</a>
+        <a href={composeHref} target="_blank" rel="noreferrer" className="bg-yellow-400 text-black px-5 py-3 rounded font-semibold hover:bg-yellow-300">Send via Gmail</a>
         <a href="#home" className="border border-yellow-400 px-5 py-3 rounded hover:bg-yellow-400/10">Back to Home</a>
       </div>
+      <p className="text-xs text-gray-500">Tip: If you are not logged into Gmail in this browser, you'll be prompted to sign in.</p>
     </form>
   );
 }
