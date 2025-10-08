@@ -5,11 +5,11 @@ import { motion, useScroll, useTransform } from "framer-motion";
 
 /**
  * Peakime – SEO-optimized single page
- * - Brand keywords baked into <Helmet> for SEO
+ * - SEO/meta via Helmet (NO <script> tags here)
  * - JSON-LD Organization + Website schema
  * - Accessible nav with working anchor buttons
  * - Smooth scroll, back-to-top, light/dark toggle
- * - Minimal Tailwind classes (works even without Tailwind—keeps it readable)
+ * - Tailwind-like utility classes (harmless if Tailwind absent)
  */
 
 export default function App() {
@@ -25,14 +25,19 @@ export default function App() {
   const [showTop, setShowTop] = useState(false);
   useEffect(() => {
     const onScroll = () => setShowTop(window.scrollY > 320);
-    window.addEventListener("scroll", onScroll);
+    window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // simple smooth scroll helper
+  // smooth scroll helper (with safe fallback)
   const go = (id) => {
+    if (!id) return;
     const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (el && "scrollIntoView" in el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    } else {
+      window.location.hash = `#${id}`;
+    }
   };
 
   // parallax for hero background
@@ -45,7 +50,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-black text-white selection:bg-yellow-300 selection:text-black">
-      {/* ---------- SEO ---------- */}
+      {/* ---------- SEO (no <script> or HTML comments here) ---------- */}
       <Helmet>
         <html lang="en" />
         <title>Peakime – Watch Freely. Dream Deeply.</title>
@@ -55,22 +60,6 @@ export default function App() {
           name="description"
           content="Peakime by PeakCraft Studios Private Limited—India’s home for licensed anime & donghua. Free, legal, high-quality streaming with dubbing & subs. Merchandise and community by Mr Animer."
         />
-        <meta
-          name="keywords"
-          content="Peakime, Peakimation, PeakCraft Studios Private Limited, Mr Animer, anime India, donghua India, Indian animation, anime merchandise India, otaku merch, figures, collectibles, apparel, licensed anime, Hindi dubbed anime, Telugu dubbed anime, Tamil dubbed anime, subbed anime, streaming platform"
-        />
-        <meta
-                name="google-site-verification" 
-                content="TcFVALDyzB3KWL0zKk_vQaPocXKH099Vy65SFhiOgw4" 
-        />
-        <!-- Google tag (gtag.js) -->
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-XHENKT9HYX"></script>
-        <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'G-XHENKT9HYX');
-        </script>
         <link rel="canonical" href="https://peakime.com/" />
 
         {/* Open Graph / Twitter */}
@@ -89,49 +78,50 @@ export default function App() {
           content="Licensed anime & donghua for India. Free, legal, high-quality."
         />
         <meta name="twitter:image" content="https://peakime.com/og-cover.jpg" />
-        <meta name="theme-color" content="#111111" />
 
         {/* JSON-LD: Organization */}
-        <script type="application/ld+json">
-          {JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Organization",
-            name: "PeakCraft Studios Private Limited",
-            url: "https://peakime.com/",
-            logo: "https://peakime.com/logo192.png",
-            brand: { "@type": "Brand", name: "Peakime", slogan: "Watch Freely. Dream Deeply." },
-            sameAs: [
-              "https://x.com/Peakime",
-              "https://www.instagram.com/peakime"
-            ],
-            contactPoint: [
-              {
-                "@type": "ContactPoint",
-                email: "revanthchowdhary264@gmail.com",
-                contactType: "customer support",
-                areaServed: "IN",
-              },
-            ],
-          })}
-        </script>
+        <script type="application/ld+json">{JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          name: "PeakCraft Studios Private Limited",
+          url: "https://peakime.com/",
+          logo: "https://peakime.com/logo192.png",
+          brand: { "@type": "Brand", name: "Peakime", slogan: "Watch Freely. Dream Deeply." },
+          sameAs: [
+            "https://x.com/Peakime",
+            "https://www.instagram.com/peakime",
+          ],
+          contactPoint: [
+            {
+              "@type": "ContactPoint",
+              email: "support@peakime.com",
+              contactType: "customer support",
+              areaServed: "IN",
+            },
+            {
+              "@type": "ContactPoint",
+              email: "sales@peakime.com",
+              contactType: "sales",
+              areaServed: "IN",
+            },
+          ],
+        })}</script>
 
         {/* JSON-LD: WebSite + SearchAction */}
-        <script type="application/ld+json">
-          {JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "WebSite",
-            url: "https://peakime.com/",
-            name: "Peakime",
-            potentialAction: {
-              "@type": "SearchAction",
-              target: {
-                "@type": "EntryPoint",
-                urlTemplate: "https://peakime.com/?q={search_term_string}",
-              },
-              "query-input": "required name=search_term_string",
+        <script type="application/ld+json">{JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          url: "https://peakime.com/",
+          name: "Peakime",
+          potentialAction: {
+            "@type": "SearchAction",
+            target: {
+              "@type": "EntryPoint",
+              urlTemplate: "https://peakime.com/?q={search_term_string}",
             },
-          })}
-        </script>
+            "query-input": "required name=search_term_string",
+          },
+        })}</script>
       </Helmet>
 
       {/* ---------- NAV ---------- */}
@@ -139,7 +129,7 @@ export default function App() {
         <div className="mx-auto max-w-7xl px-6 py-3 flex items-center justify-between">
           <button
             onClick={() => go("home")}
-            className="text-lg md:text-xl font-extrabold tracking-wide text-yellow-400"
+            className="text-lg md:text-xl font-extrabold tracking-wide text-yellow-400 focus:outline-none focus:ring-2 focus:ring-yellow-400/60 rounded"
             aria-label="Go to home"
           >
             PEAKIME
@@ -147,19 +137,19 @@ export default function App() {
 
           <nav aria-label="primary" className="hidden md:block">
             <ul className="flex gap-7 text-sm text-gray-300">
-              <li><button onClick={() => go("about")} className="hover:text-yellow-400">About</button></li>
-              <li><button onClick={() => go("mission")} className="hover:text-yellow-400">Mission</button></li>
-              <li><button onClick={() => go("studios")} className="hover:text-yellow-400">Studios</button></li>
-              <li><button onClick={() => go("merch")} className="hover:text-yellow-400">Merch</button></li>
-              <li><button onClick={() => go("community")} className="hover:text-yellow-400">Community</button></li>
-              <li><button onClick={() => go("contact")} className="hover:text-yellow-400">Contact</button></li>
+              <li><button onClick={() => go("about")} className="hover:text-yellow-400 focus:outline-none focus:underline">About</button></li>
+              <li><button onClick={() => go("mission")} className="hover:text-yellow-400 focus:outline-none focus:underline">Mission</button></li>
+              <li><button onClick={() => go("studios")} className="hover:text-yellow-400 focus:outline-none focus:underline">Studios</button></li>
+              <li><button onClick={() => go("merch")} className="hover:text-yellow-400 focus:outline-none focus:underline">Merch</button></li>
+              <li><button onClick={() => go("community")} className="hover:text-yellow-400 focus:outline-none focus:underline">Community</button></li>
+              <li><button onClick={() => go("contact")} className="hover:text-yellow-400 focus:outline-none focus:underline">Contact</button></li>
             </ul>
           </nav>
 
           <div className="flex items-center gap-3">
             <button
               onClick={() => setDark((d) => !d)}
-              className="text-xs border border-white/20 px-3 py-1 rounded hover:border-yellow-400 hover:text-yellow-400 transition"
+              className="text-xs border border-white/20 px-3 py-1 rounded hover:border-yellow-400 hover:text-yellow-400 transition focus:outline-none focus:ring-2 focus:ring-yellow-400/60"
               aria-pressed={dark}
               aria-label="Toggle color mode"
             >
@@ -167,7 +157,7 @@ export default function App() {
             </button>
             <button
               onClick={() => go("coming")}
-              className="hidden md:inline-block bg-yellow-400 text-black text-xs font-semibold px-3 py-2 rounded hover:bg-yellow-300"
+              className="hidden md:inline-block bg-yellow-400 text-black text-xs font-semibold px-3 py-2 rounded hover:bg-yellow-300 focus:outline-none focus:ring-2 focus:ring-yellow-300/60"
             >
               Start Watching Soon
             </button>
@@ -206,13 +196,13 @@ export default function App() {
         <div className="mt-8 flex gap-4">
           <button
             onClick={() => go("coming")}
-            className="bg-yellow-400 text-black px-6 py-3 rounded-lg font-semibold hover:bg-yellow-300 transition"
+            className="bg-yellow-400 text-black px-6 py-3 rounded-lg font-semibold hover:bg-yellow-300 transition focus:outline-none focus:ring-2 focus:ring-yellow-300/60"
           >
             Start Watching Soon
           </button>
           <button
             onClick={() => go("studios")}
-            className="border border-yellow-400 px-6 py-3 rounded-lg hover:bg-yellow-400/10 transition"
+            className="border border-yellow-400 px-6 py-3 rounded-lg hover:bg-yellow-400/10 transition focus:outline-none focus:ring-2 focus:ring-yellow-400/60"
           >
             Partner With Us
           </button>
@@ -241,8 +231,8 @@ export default function App() {
       <Section id="studios" title="Studios & Licensors">
         We’re open to partnerships across Japan, China and India.
         <div className="mt-4 flex flex-wrap gap-3">
-          <CTA href="#contact" label="Talk Licensing" />
-          <CTA href="#contact" label="Dubbing & Subtitling" variant="ghost" />
+          <CTA onClick={() => go("contact")} label="Talk Licensing" />
+          <CTA onClick={() => go("contact")} label="Dubbing & Subtitling" variant="ghost" />
         </div>
       </Section>
 
@@ -250,8 +240,8 @@ export default function App() {
       <Section id="merch" title="Merch & Collectibles">
         Figures, apparel, prints and collabs—crafted for Indian otaku.
         <div className="mt-4 flex flex-wrap gap-3">
-          <CTA href="#coming" label="Shop (coming soon)" />
-          <CTA href="#community" label="Join Community" variant="ghost" />
+          <CTA onClick={() => go("coming")} label="Shop (coming soon)" />
+          <CTA onClick={() => go("community")} label="Join Community" variant="ghost" />
         </div>
       </Section>
 
@@ -260,7 +250,7 @@ export default function App() {
         Join the fan hub, watch parties and creator programs—by <strong>Mr Animer</strong> and the
         Peakime team.
         <div className="mt-4">
-          <CTA href="#contact" label="Creator Signup" />
+          <CTA onClick={() => go("contact")} label="Creator Signup" />
         </div>
       </Section>
 
@@ -279,17 +269,22 @@ export default function App() {
           Partnerships, licensing, creators & support—reach us anytime.
         </p>
         <div className="mt-4 flex flex-wrap gap-3">
+          {/* Open Gmail compose directly */}
           <a
-            className="inline-flex items-center justify-center rounded-lg px-5 py-3 bg-yellow-400 text-black font-semibold hover:bg-yellow-300"
-            href="mailto:revanthchowdhary264@gmail.com?subject=Peakime%20Enquiry&body=Hi%20Peakime%20team%2C%0D%0A%0D%0A"
+            className="inline-flex items-center justify-center rounded-lg px-5 py-3 bg-yellow-400 text-black font-semibold hover:bg-yellow-300 focus:outline-none focus:ring-2 focus:ring-yellow-300/60"
+            href="https://mail.google.com/mail/?view=cm&to=sales@peakime.com,support@peakime.com&su=Peakime%20Enquiry&body=Hi%20Peakime%20team%2C%0A%0A"
+            target="_blank"
+            rel="noopener noreferrer"
           >
-            Email Us
+            Email Us (Gmail)
           </a>
+
+          {/* Phone placeholder; replace when ready */}
           <a
-            className="inline-flex items-center justify-center rounded-lg px-5 py-3 border border-yellow-400 hover:bg-yellow-400/10"
-            href="tel:+91-0000000000"
+            className="inline-flex items-center justify-center rounded-lg px-5 py-3 border border-yellow-400 hover:bg-yellow-400/10 focus:outline-none focus:ring-2 focus:ring-yellow-400/60"
+            href="tel:+916300458916"
           >
-            Call (placeholder)
+            Call +91 63004 58916
           </a>
         </div>
       </Section>
@@ -297,11 +292,11 @@ export default function App() {
       {/* ---------- FOOTER ---------- */}
       <footer className="border-t border-white/10 py-10 text-center text-gray-400 text-sm">
         <nav className="mb-3 space-x-4">
-          <a className="hover:text-yellow-400" href="#about">About</a>
-          <a className="hover:text-yellow-400" href="#studios">Licensing</a>
-          <a className="hover:text-yellow-400" href="#community">Community</a>
-          <a className="hover:text-yellow-400" href="#contact">Contact</a>
-          <a className="hover:text-yellow-400" href="#coming">App</a>
+          <a className="hover:text-yellow-400" href="#about" onClick={(e)=>{e.preventDefault();go("about");}}>About</a>
+          <a className="hover:text-yellow-400" href="#studios" onClick={(e)=>{e.preventDefault();go("studios");}}>Licensing</a>
+          <a className="hover:text-yellow-400" href="#community" onClick={(e)=>{e.preventDefault();go("community");}}>Community</a>
+          <a className="hover:text-yellow-400" href="#contact" onClick={(e)=>{e.preventDefault();go("contact");}}>Contact</a>
+          <a className="hover:text-yellow-400" href="#coming" onClick={(e)=>{e.preventDefault();go("coming");}}>App</a>
         </nav>
         <p>© {new Date().getFullYear()} PeakCraft Studios Private Limited. All Rights Reserved.</p>
       </footer>
@@ -311,7 +306,7 @@ export default function App() {
         <button
           aria-label="Back to top"
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className="fixed bottom-6 right-6 z-50 bg-yellow-400 text-black px-4 py-3 rounded-full shadow-lg hover:bg-yellow-300"
+          className="fixed bottom-6 right-6 z-50 bg-yellow-400 text-black px-4 py-3 rounded-full shadow-lg hover:bg-yellow-300 focus:outline-none focus:ring-2 focus:ring-yellow-300/60"
         >
           ↑
         </button>
@@ -324,7 +319,7 @@ export default function App() {
 
 function Section({ id, title, children }) {
   return (
-    <section id={id} className="px-6 py-20 md:py-24 border-t border-white/10">
+    <section id={id} className="px-6 py-20 md:py-24 border-t border-white/10 scroll-mt-24">
       <div className="mx-auto max-w-5xl">
         <h2 className="text-2xl md:text-4xl font-extrabold text-yellow-400">{title}</h2>
         <div className="mt-4 text-gray-300 leading-relaxed">{children}</div>
@@ -333,29 +328,22 @@ function Section({ id, title, children }) {
   );
 }
 
-function CTA({ href = "#", label, variant = "solid" }) {
-  const base =
-    "inline-flex items-center justify-center rounded-lg px-5 py-3 font-semibold transition";
-  const solid = "bg-yellow-400 text-black hover:bg-yellow-300";
-  const ghost = "border border-yellow-400 hover:bg-yellow-400/10";
+function CTA({ onClick, label, variant = "solid" }) {
+  const base = "inline-flex items-center justify-center rounded-lg px-5 py-3 font-semibold transition focus:outline-none";
+  const solid = "bg-yellow-400 text-black hover:bg-yellow-300 focus:ring-2 focus:ring-yellow-300/60";
+  const ghost = "border border-yellow-400 hover:bg-yellow-400/10 focus:ring-2 focus:ring-yellow-400/60";
   const cls = `${base} ${variant === "ghost" ? ghost : solid}`;
   return (
-    <a className={cls} href={href} onClick={(e) => href.startsWith("#") && e.preventDefault()}>
-      {href.startsWith("#") ? (
-        <span onClick={() => document.querySelector(href)?.scrollIntoView({ behavior: "smooth" })}>
-          {label}
-        </span>
-      ) : (
-        label
-      )}
-    </a>
+    <button className={cls} type="button" onClick={onClick}>
+      {label}
+    </button>
   );
 }
 
 function Social({ href, label }) {
   return (
     <a
-      className="inline-flex items-center justify-center rounded-lg px-5 py-3 border border-white/20 hover:border-yellow-400 hover:text-yellow-400"
+      className="inline-flex items-center justify-center rounded-lg px-5 py-3 border border-white/20 hover:border-yellow-400 hover:text-yellow-400 focus:outline-none focus:ring-2 focus:ring-yellow-400/60"
       href={href}
       target="_blank"
       rel="noreferrer"
