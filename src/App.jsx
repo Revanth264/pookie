@@ -1,27 +1,15 @@
-// src/App.jsx
 import { useEffect, useState, useRef } from "react";
 import { Helmet } from "react-helmet-async";
 import { motion, useScroll, useTransform } from "framer-motion";
 
-/**
- * Peakime – SEO-optimized single page
- * - SEO/meta via Helmet (NO <script> tags here)
- * - JSON-LD Organization + Website schema
- * - Accessible nav with working anchor buttons
- * - Smooth scroll, back-to-top, light/dark toggle
- * - Tailwind-like utility classes (harmless if Tailwind absent)
- */
-
 export default function App() {
-  // theme toggle
+  // THEME
   const [dark, setDark] = useState(true);
   useEffect(() => {
-    const root = document.documentElement;
-    if (dark) root.classList.add("dark");
-    else root.classList.remove("dark");
+    document.body.setAttribute("data-theme", dark ? "dark" : "light");
   }, [dark]);
 
-  // show back-to-top
+  // BACK TO TOP VISIBILITY
   const [showTop, setShowTop] = useState(false);
   useEffect(() => {
     const onScroll = () => setShowTop(window.scrollY > 320);
@@ -29,135 +17,137 @@ export default function App() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // smooth scroll helper (with safe fallback)
-  const go = (id) => {
-    if (!id) return;
+  // SMOOTH SCROLL WITH HEADER OFFSET
+  const scrollToId = (id) => {
     const el = document.getElementById(id);
-    if (el && "scrollIntoView" in el) {
-      el.scrollIntoView({ behavior: "smooth", block: "start" });
-    } else {
-      window.location.hash = `#${id}`;
-    }
+    const header = document.querySelector("header");
+    if (!el) return;
+    const headerH = header ? header.getBoundingClientRect().height : 0;
+    const y = el.getBoundingClientRect().top + window.scrollY - (headerH + 12);
+    window.scrollTo({ top: y, behavior: "smooth" });
   };
 
-  // parallax for hero background
+  // HERO PARALLAX
   const heroRef = useRef(null);
-  const { scrollYProgress } = useScroll({
-    target: heroRef,
-    offset: ["start end", "end start"],
-  });
+  const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start end", "end start"] });
   const y = useTransform(scrollYProgress, [0, 1], [0, -220]);
 
   return (
-    <div className="min-h-screen bg-black text-white selection:bg-yellow-300 selection:text-black">
-      {/* ---------- SEO (no <script> or HTML comments here) ---------- */}
+    <div
+      className="min-h-screen"
+      style={{
+        background: "var(--bg-grad)",
+        color: "var(--fg)",
+      }}
+    >
       <Helmet>
         <html lang="en" />
-        <title>Peakime – Watch Freely. Dream Deeply.</title>
-
-        {/* Primary */}
+        <title>Peakime — Watch Freely. Dream Deeply.</title>
         <meta
           name="description"
-          content="Peakime by PeakCraft Studios Private Limited—India’s home for licensed anime & donghua. Free, legal, high-quality streaming with dubbing & subs. Merchandise and community by Mr Animer."
+          content="Peakime by PeakCraft Studios Private Limited — India’s home for licensed anime & donghua. Free, legal, high-quality streaming with dubbing & subs. Merchandise and community by Mr Animer."
         />
         <link rel="canonical" href="https://peakime.com/" />
 
-        {/* Open Graph / Twitter */}
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://peakime.com/" />
-        <meta property="og:title" content="Peakime – Watch Freely. Dream Deeply." />
-        <meta
-          property="og:description"
-          content="Licensed anime & donghua for India. Free, legal, high-quality. Merchandise & community."
-        />
-        <meta property="og:image" content="https://peakime.com/og-cover.jpg" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Peakime – Watch Freely. Dream Deeply." />
-        <meta
-          name="twitter:description"
-          content="Licensed anime & donghua for India. Free, legal, high-quality."
-        />
-        <meta name="twitter:image" content="https://peakime.com/og-cover.jpg" />
-
-        {/* JSON-LD: Organization */}
-        <script type="application/ld+json">{JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "Organization",
-          name: "PeakCraft Studios Private Limited",
-          url: "https://peakime.com/",
-          logo: "https://peakime.com/logo192.png",
-          brand: { "@type": "Brand", name: "Peakime", slogan: "Watch Freely. Dream Deeply." },
-          sameAs: [
-            "https://x.com/Peakime",
-            "https://www.instagram.com/peakime",
-          ],
-          contactPoint: [
-            {
-              "@type": "ContactPoint",
-              email: "support@peakime.com",
-              contactType: "customer support",
-              areaServed: "IN",
-            },
-            {
-              "@type": "ContactPoint",
-              email: "sales@peakime.com",
-              contactType: "sales",
-              areaServed: "IN",
-            },
-          ],
-        })}</script>
-
-        {/* JSON-LD: WebSite + SearchAction */}
-        <script type="application/ld+json">{JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "WebSite",
-          url: "https://peakime.com/",
-          name: "Peakime",
-          potentialAction: {
-            "@type": "SearchAction",
-            target: {
-              "@type": "EntryPoint",
-              urlTemplate: "https://peakime.com/?q={search_term_string}",
-            },
-            "query-input": "required name=search_term_string",
-          },
-        })}</script>
+        {/* Theme CSS variables (light/dark) */}
+        <style>{`
+          :root {
+            --fg: #ffffff;
+            --fg-muted: #cbd5e1;
+            --accent: #facc15; /* yellow-400 */
+            --accent-contrast: #111111;
+            --line: rgba(255,255,255,0.12);
+            --bg: #0b0f17;
+            --bg-grad: radial-gradient(1200px 600px at 50% -5%, rgba(255,255,255,0.08), transparent), linear-gradient(180deg, #0b0f17, #0b0f17 20%, #0d1117 100%);
+            --panel: rgba(0,0,0,0.6);
+            --panel-blur: saturate(140%) blur(8px);
+          }
+          body[data-theme="light"] {
+            --fg: #111827;
+            --fg-muted: #374151;
+            --accent: #d97706; /* amber-600 */
+            --accent-contrast: #ffffff;
+            --line: rgba(0,0,0,0.12);
+            --bg: #f7fafc;
+            --bg-grad: radial-gradient(900px 500px at 50% -5%, rgba(0,0,0,0.06), transparent), linear-gradient(180deg, #ffffff, #f8fafc 40%, #eef2f7 100%);
+            --panel: rgba(255,255,255,0.7);
+            --panel-blur: saturate(140%) blur(8px);
+          }
+          html { scroll-behavior: smooth; }
+          a { color: inherit; }
+          .btn {
+            display:inline-flex; align-items:center; justify-content:center;
+            border-radius: .75rem; padding: .75rem 1.25rem; font-weight: 600;
+            transition: all .2s ease;
+          }
+          .btn-solid { background: var(--accent); color: var(--accent-contrast); }
+          .btn-solid:hover { filter: brightness(1.05); transform: translateY(-1px); }
+          .btn-ghost  { border: 1px solid var(--accent); color: var(--fg); }
+          .btn-ghost:hover { background: color-mix(in srgb, var(--accent) 12%, transparent); transform: translateY(-1px); }
+          .divider { border-top: 1px solid var(--line); }
+          .muted { color: var(--fg-muted); }
+          .card {
+            background: var(--panel); -webkit-backdrop-filter: var(--panel-blur); backdrop-filter: var(--panel-blur);
+            border: 1px solid var(--line); border-radius: 1.25rem; padding: 1.25rem 1.25rem;
+          }
+          .nav-link { color: var(--fg-muted); }
+          .nav-link:hover, .nav-link:focus { color: var(--accent); text-decoration: underline; outline: none; }
+          .section { padding: 5rem 1.5rem; scroll-margin-top: 92px; }
+          @media (min-width: 768px){ .section { padding: 6rem 1.5rem; } }
+        `}</style>
       </Helmet>
 
-      {/* ---------- NAV ---------- */}
-      <header className="fixed inset-x-0 top-0 z-50 bg-black/60 backdrop-blur border-b border-white/10">
-        <div className="mx-auto max-w-7xl px-6 py-3 flex items-center justify-between">
+      {/* NAV */}
+      <header
+        className="fixed inset-x-0 top-0 z-50"
+        style={{
+          background: "linear-gradient(180deg, rgba(0,0,0,.65), rgba(0,0,0,.25))",
+          borderBottom: `1px solid var(--line)`,
+          backdropFilter: "saturate(140%) blur(10px)",
+        }}
+      >
+        <div className="mx-auto max-w-7xl px-6 py-3" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <button
-            onClick={() => go("home")}
-            className="text-lg md:text-xl font-extrabold tracking-wide text-yellow-400 focus:outline-none focus:ring-2 focus:ring-yellow-400/60 rounded"
+            onClick={() => scrollToId("home")}
+            style={{ color: "var(--accent)", fontWeight: 800, letterSpacing: ".04em" }}
             aria-label="Go to home"
           >
             PEAKIME
           </button>
 
           <nav aria-label="primary" className="hidden md:block">
-            <ul className="flex gap-7 text-sm text-gray-300">
-              <li><button onClick={() => go("about")} className="hover:text-yellow-400 focus:outline-none focus:underline">About</button></li>
-              <li><button onClick={() => go("mission")} className="hover:text-yellow-400 focus:outline-none focus:underline">Mission</button></li>
-              <li><button onClick={() => go("studios")} className="hover:text-yellow-400 focus:outline-none focus:underline">Studios</button></li>
-              <li><button onClick={() => go("merch")} className="hover:text-yellow-400 focus:outline-none focus:underline">Merch</button></li>
-              <li><button onClick={() => go("community")} className="hover:text-yellow-400 focus:outline-none focus:underline">Community</button></li>
-              <li><button onClick={() => go("contact")} className="hover:text-yellow-400 focus:outline-none focus:underline">Contact</button></li>
+            <ul style={{ display: "flex", gap: "1.75rem", fontSize: ".95rem" }}>
+              {[
+                ["about", "About"],
+                ["mission", "Vision & Mission"],
+                ["studios", "Studios & Licensors"],
+                ["categories", "Categories"],
+                ["creators", "Creators"],
+                ["community", "Community"],
+                ["legal", "Legal"],
+                ["contact", "Contact"],
+              ].map(([id, label]) => (
+                <li key={id}>
+                  <button className="nav-link" onClick={() => scrollToId(id)}>{label}</button>
+                </li>
+              ))}
             </ul>
           </nav>
 
-          <div className="flex items-center gap-3">
+          <div style={{ display: "flex", alignItems: "center", gap: ".6rem" }}>
             <button
               onClick={() => setDark((d) => !d)}
-              className="text-xs border border-white/20 px-3 py-1 rounded hover:border-yellow-400 hover:text-yellow-400 transition focus:outline-none focus:ring-2 focus:ring-yellow-400/60"
+              className="btn"
+              style={{ border: `1px solid var(--line)` }}
               aria-pressed={dark}
               aria-label="Toggle color mode"
+              title="Toggle theme"
             >
-              {dark ? "Light" : "Dark"} Mode
+              {dark ? "Light Mode" : "Dark Mode"}
             </button>
             <button
-              onClick={() => go("coming")}
-              className="hidden md:inline-block bg-yellow-400 text-black text-xs font-semibold px-3 py-2 rounded hover:bg-yellow-300 focus:outline-none focus:ring-2 focus:ring-yellow-300/60"
+              onClick={() => scrollToId("coming")}
+              className="btn btn-solid"
             >
               Start Watching Soon
             </button>
@@ -165,148 +155,175 @@ export default function App() {
         </div>
       </header>
 
-      {/* ---------- HERO ---------- */}
+      {/* HERO */}
       <section
         id="home"
         ref={heroRef}
-        className="relative h-[92vh] flex flex-col items-center justify-center text-center overflow-hidden bg-gradient-to-b from-black to-gray-900"
+        className="section"
+        style={{
+          height: "92vh",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          textAlign: "center",
+          position: "relative",
+          overflow: "hidden",
+        }}
       >
         <motion.div
           style={{ y }}
-          className="pointer-events-none absolute inset-0 opacity-25 bg-[radial-gradient(1200px_600px_at_50%_0%,rgba(255,255,255,0.12),transparent)]"
+          className="pointer-events-none"
+          style={{
+            position: "absolute",
+            inset: 0,
+            opacity: 0.25,
+            background:
+              "radial-gradient(1200px 600px at 50% 0%, rgba(255,255,255,.12), transparent)",
+          }}
         />
         <motion.h1
           initial={{ opacity: 0, y: 26 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="px-6 text-5xl md:text-7xl font-extrabold leading-tight"
+          transition={{ duration: 0.7, ease: [0.2, 0.8, 0.2, 1] }}
+          style={{ fontSize: "clamp(2.6rem, 7vw, 5rem)", fontWeight: 900, color: "var(--accent)" }}
         >
           Stories Beyond Borders.
         </motion.h1>
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.2, duration: 0.8 }}
-          className="mt-5 max-w-3xl px-6 text-lg md:text-xl text-gray-300"
+          transition={{ delay: 0.15, duration: 0.7 }}
+          className="muted"
+          style={{ marginTop: "1rem", maxWidth: 780, paddingInline: "1rem", fontSize: "1.15rem", lineHeight: 1.7 }}
         >
-          Peakime by <strong>PeakCraft Studios Private Limited</strong>—India’s home for licensed
-          <em> anime & donghua</em>. Free, legal, high-quality streaming with dubbing & subs.
-          Merchandise and community by <strong>Mr Animer</strong>.
+          Discover world-class animation — brought home to India. Watch officially licensed anime and donghua,
+          dubbed and subtitled for everyone, everywhere. Watch Freely. Dream Deeply.
         </motion.p>
-        <div className="mt-8 flex gap-4">
-          <button
-            onClick={() => go("coming")}
-            className="bg-yellow-400 text-black px-6 py-3 rounded-lg font-semibold hover:bg-yellow-300 transition focus:outline-none focus:ring-2 focus:ring-yellow-300/60"
-          >
-            Start Watching Soon
-          </button>
-          <button
-            onClick={() => go("studios")}
-            className="border border-yellow-400 px-6 py-3 rounded-lg hover:bg-yellow-400/10 transition focus:outline-none focus:ring-2 focus:ring-yellow-400/60"
-          >
-            Partner With Us
-          </button>
+
+        <div style={{ marginTop: "2rem", display: "flex", gap: ".9rem", flexWrap: "wrap" }}>
+          <button onClick={() => scrollToId("coming")} className="btn btn-solid">Start Watching Soon</button>
+          <button onClick={() => scrollToId("studios")} className="btn btn-ghost">Partner With Us</button>
         </div>
-        <p className="absolute bottom-6 text-xs text-gray-400 opacity-75">Scroll</p>
+
+        <p className="muted" style={{ position: "absolute", bottom: 24, fontSize: 12, opacity: .8 }}>
+          Scroll
+        </p>
       </section>
 
-      {/* ---------- ABOUT ---------- */}
+      {/* ABOUT */}
       <Section id="about" title="About Peakime">
-        Peakime (a PeakCraft Studios Pvt. Ltd. brand) is building India’s most loved destination
-        for <strong>licensed anime, donghua & Indian animation</strong>—with dubs, subs and a
-        thriving creator community.
+        Peakime (a PeakCraft Studios Pvt. Ltd. brand) is building India’s most loved destination for{" "}
+        <strong>licensed anime, donghua & Indian animation</strong> — with dubs, subs, and a thriving creator community.
       </Section>
 
-      {/* ---------- MISSION ---------- */}
+      {/* MISSION */}
       <Section id="mission" title="Vision & Mission">
-        <ul className="list-disc pl-5 space-y-2 text-gray-300">
+        <ul className="muted" style={{ paddingLeft: "1.25rem", display: "grid", gap: ".5rem", listStyle: "disc" }}>
           <li>Legal, affordable, high-quality streaming for India.</li>
           <li>Best-in-class Hindi / Telugu / Tamil dubs and accurate subtitles.</li>
-          <li>Creator-first ecosystem—events, collabs, and opportunities.</li>
+          <li>Creator-first ecosystem — events, collabs, and opportunities.</li>
           <li>Transparent licensing that supports original studios.</li>
         </ul>
       </Section>
 
-      {/* ---------- STUDIOS ---------- */}
+      {/* STUDIOS */}
       <Section id="studios" title="Studios & Licensors">
         We’re open to partnerships across Japan, China and India.
-        <div className="mt-4 flex flex-wrap gap-3">
-          <CTA onClick={() => go("contact")} label="Talk Licensing" />
-          <CTA onClick={() => go("contact")} label="Dubbing & Subtitling" variant="ghost" />
+        <div style={{ marginTop: "1rem", display: "flex", gap: ".75rem", flexWrap: "wrap" }}>
+          <button className="btn btn-solid" onClick={() => scrollToId("contact")}>Talk Licensing</button>
+          <button className="btn btn-ghost" onClick={() => scrollToId("contact")}>Dubbing & Subtitling</button>
         </div>
       </Section>
 
-      {/* ---------- MERCH ---------- */}
+      {/* CATEGORIES (NEW) */}
+      <Section id="categories" title="Categories">
+        <div className="card" style={{ display: "grid", gap: ".75rem" }}>
+          <span>Action • Adventure • Fantasy • Romance • Slice of Life</span>
+          <span>Comedy • Sci-Fi • Mecha • Historical • Sports</span>
+          <span>Indian Animation • Donghua • Originals (future)</span>
+        </div>
+      </Section>
+
+      {/* MERCH */}
       <Section id="merch" title="Merch & Collectibles">
         Figures, apparel, prints and collabs—crafted for Indian otaku.
-        <div className="mt-4 flex flex-wrap gap-3">
-          <CTA onClick={() => go("coming")} label="Shop (coming soon)" />
-          <CTA onClick={() => go("community")} label="Join Community" variant="ghost" />
+        <div style={{ marginTop: "1rem", display: "flex", gap: ".75rem", flexWrap: "wrap" }}>
+          <button className="btn btn-solid" onClick={() => scrollToId("coming")}>Shop (coming soon)</button>
+          <button className="btn btn-ghost" onClick={() => scrollToId("community")}>Join Community</button>
         </div>
       </Section>
 
-      {/* ---------- COMMUNITY ---------- */}
-      <Section id="community" title="Community & Creators">
-        Join the fan hub, watch parties and creator programs—by <strong>Mr Animer</strong> and the
-        Peakime team.
-        <div className="mt-4">
-          <CTA onClick={() => go("contact")} label="Creator Signup" />
+      {/* CREATORS (NEW) */}
+      <Section id="creators" title="Creators">
+        Join the fan hub, watch parties and creator programs — by <strong>Mr Animer</strong> and the Peakime team.
+        <div style={{ marginTop: "1rem" }}>
+          <button className="btn btn-solid" onClick={() => scrollToId("contact")}>Creator Signup</button>
         </div>
       </Section>
 
-      {/* ---------- COMING SOON ---------- */}
-      <Section id="coming" title="Coming Soon">
-        Streaming app & store are under active development. Follow our socials for drops and alpha.
-        <div className="mt-4 flex gap-3">
+      {/* COMMUNITY */}
+      <Section id="community" title="Community">
+        <div className="card" style={{ display: "flex", gap: ".75rem", flexWrap: "wrap" }}>
           <Social href="https://x.com/Peakime" label="X (Twitter)" />
           <Social href="https://www.instagram.com/peakime" label="Instagram" />
         </div>
       </Section>
 
-      {/* ---------- CONTACT ---------- */}
+      {/* COMING SOON */}
+      <Section id="coming" title="Coming Soon">
+        Streaming app & store are under active development. Follow our socials for drops and alpha.
+        <div style={{ marginTop: "1rem", display: "flex", gap: ".75rem", flexWrap: "wrap" }}>
+          <Social href="https://x.com/Peakime" label="X (Twitter)" />
+          <Social href="https://www.instagram.com/peakime" label="Instagram" />
+        </div>
+      </Section>
+
+      {/* LEGAL (NEW) */}
+      <Section id="legal" title="Legal">
+        © {new Date().getFullYear()} PeakCraft Studios Private Limited. All rights reserved. Terms of Service and Privacy Policy (coming soon).
+      </Section>
+
+      {/* CONTACT */}
       <Section id="contact" title="Contact">
-        <p className="text-gray-300">
-          Partnerships, licensing, creators & support—reach us anytime.
-        </p>
-        <div className="mt-4 flex flex-wrap gap-3">
-          {/* Open Gmail compose directly */}
+        <p className="muted">Partnerships, licensing, creators & support—reach us anytime.</p>
+        <div style={{ marginTop: "1rem", display: "flex", gap: ".75rem", flexWrap: "wrap" }}>
           <a
-            className="inline-flex items-center justify-center rounded-lg px-5 py-3 bg-yellow-400 text-black font-semibold hover:bg-yellow-300 focus:outline-none focus:ring-2 focus:ring-yellow-300/60"
-            href="https://mail.google.com/mail/?view=cm&to=sales@peakime.com,support@peakime.com&su=Peakime%20Enquiry&body=Hi%20Peakime%20team%2C%0A%0A"
+            className="btn btn-solid"
+            href="https://mail.google.com/mail/?view=cm&to=sales@peakime.com,support@peakime.com&su=Peakime%20Enquiry&body=Hi%20Peakime%20Team%2C"
             target="_blank"
             rel="noopener noreferrer"
           >
             Email Us (Gmail)
           </a>
-
-          {/* Phone placeholder; replace when ready */}
-          <a
-            className="inline-flex items-center justify-center rounded-lg px-5 py-3 border border-yellow-400 hover:bg-yellow-400/10 focus:outline-none focus:ring-2 focus:ring-yellow-400/60"
-            href="tel:+916300458916"
-          >
-            Call +91 63004 58916
-          </a>
+          <a className="btn btn-ghost" href="tel:+916300458916">Call +91 63004 58916</a>
         </div>
       </Section>
 
-      {/* ---------- FOOTER ---------- */}
-      <footer className="border-t border-white/10 py-10 text-center text-gray-400 text-sm">
-        <nav className="mb-3 space-x-4">
-          <a className="hover:text-yellow-400" href="#about" onClick={(e)=>{e.preventDefault();go("about");}}>About</a>
-          <a className="hover:text-yellow-400" href="#studios" onClick={(e)=>{e.preventDefault();go("studios");}}>Licensing</a>
-          <a className="hover:text-yellow-400" href="#community" onClick={(e)=>{e.preventDefault();go("community");}}>Community</a>
-          <a className="hover:text-yellow-400" href="#contact" onClick={(e)=>{e.preventDefault();go("contact");}}>Contact</a>
-          <a className="hover:text-yellow-400" href="#coming" onClick={(e)=>{e.preventDefault();go("coming");}}>App</a>
+      {/* FOOTER */}
+      <footer className="divider" style={{ padding: "2.5rem 0", textAlign: "center", color: "var(--fg-muted)" }}>
+        <nav style={{ marginBottom: ".75rem", display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
+          {["about","studios","categories","creators","community","contact","coming","legal"].map((id) => (
+            <a
+              key={id}
+              href={`#${id}`}
+              className="nav-link"
+              onClick={(e) => { e.preventDefault(); scrollToId(id); }}
+            >
+              {id.charAt(0).toUpperCase() + id.slice(1)}
+            </a>
+          ))}
         </nav>
-        <p>© {new Date().getFullYear()} PeakCraft Studios Private Limited. All Rights Reserved.</p>
+        <p>© {new Date().getFullYear()} PeakCraft Studios Private Limited.</p>
       </footer>
 
-      {/* back-to-top */}
+      {/* BACK TO TOP */}
       {showTop && (
         <button
           aria-label="Back to top"
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className="fixed bottom-6 right-6 z-50 bg-yellow-400 text-black px-4 py-3 rounded-full shadow-lg hover:bg-yellow-300 focus:outline-none focus:ring-2 focus:ring-yellow-300/60"
+          className="btn btn-solid"
+          style={{ position: "fixed", right: 24, bottom: 24, borderRadius: 9999 }}
         >
           ↑
         </button>
@@ -315,40 +332,28 @@ export default function App() {
   );
 }
 
-/* ------------------ Small presentational helpers ------------------ */
-
+/* ---- helpers ---- */
 function Section({ id, title, children }) {
   return (
-    <section id={id} className="px-6 py-20 md:py-24 border-t border-white/10 scroll-mt-24">
-      <div className="mx-auto max-w-5xl">
-        <h2 className="text-2xl md:text-4xl font-extrabold text-yellow-400">{title}</h2>
-        <div className="mt-4 text-gray-300 leading-relaxed">{children}</div>
+    <section id={id} className="section">
+      <div className="mx-auto" style={{ maxWidth: 980 }}>
+        <h2 style={{ fontSize: "clamp(1.6rem, 3.5vw, 2.25rem)", fontWeight: 900, color: "var(--accent)" }}>
+          {title}
+        </h2>
+        <div className="muted" style={{ marginTop: ".75rem", lineHeight: 1.7 }}>{children}</div>
       </div>
     </section>
-  );
-}
-
-function CTA({ onClick, label, variant = "solid" }) {
-  const base = "inline-flex items-center justify-center rounded-lg px-5 py-3 font-semibold transition focus:outline-none";
-  const solid = "bg-yellow-400 text-black hover:bg-yellow-300 focus:ring-2 focus:ring-yellow-300/60";
-  const ghost = "border border-yellow-400 hover:bg-yellow-400/10 focus:ring-2 focus:ring-yellow-400/60";
-  const cls = `${base} ${variant === "ghost" ? ghost : solid}`;
-  return (
-    <button className={cls} type="button" onClick={onClick}>
-      {label}
-    </button>
   );
 }
 
 function Social({ href, label }) {
   return (
     <a
-      className="inline-flex items-center justify-center rounded-lg px-5 py-3 border border-white/20 hover:border-yellow-400 hover:text-yellow-400 focus:outline-none focus:ring-2 focus:ring-yellow-400/60"
+      className="btn"
       href={href}
       target="_blank"
       rel="noreferrer"
-      aria-label={label}
-      title={label}
+      style={{ border: `1px solid var(--line)` }}
     >
       {label}
     </a>
