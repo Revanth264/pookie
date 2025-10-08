@@ -59,11 +59,18 @@ export default function App() {
           name="keywords"
           content="Peakime, Peakimation, PeakCraft Studios Private Limited, Mr Animer, anime India, donghua India, Indian animation, anime merchandise India, otaku merch, figures, collectibles, apparel, licensed anime, Hindi dubbed anime, Telugu dubbed anime, Tamil dubbed anime, subbed anime, streaming platform"
         />
-        // inside <Helmet> in App.jsx
-          <meta
+        <meta
                 name="google-site-verification" 
                 content="TcFVALDyzB3KWL0zKk_vQaPocXKH099Vy65SFhiOgw4" 
         />
+        <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-XHENKT9HYX"></script>
+        <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-XHENKT9HYX');
+        </script>
         <link rel="canonical" href="https://peakime.com/" />
 
         {/* Open Graph / Twitter */}
