@@ -59,6 +59,11 @@ export default function App() {
           name="keywords"
           content="Peakime, Peakimation, PeakCraft Studios Private Limited, Mr Animer, anime India, donghua India, Indian animation, anime merchandise India, otaku merch, figures, collectibles, apparel, licensed anime, Hindi dubbed anime, Telugu dubbed anime, Tamil dubbed anime, subbed anime, streaming platform"
         />
+        // inside <Helmet> in App.jsx
+          <meta
+                name="google-site-verification" 
+                content="TcFVALDyzB3KWL0zKk_vQaPocXKH099Vy65SFhiOgw4" 
+        />
         <link rel="canonical" href="https://peakime.com/" />
 
         {/* Open Graph / Twitter */}
