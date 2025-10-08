@@ -1,381 +1,356 @@
-import { useEffect, useRef, useState } from "react";
+// src/App.jsx
+import { useEffect, useState, useRef } from "react";
+import { Helmet } from "react-helmet-async";
 import { motion, useScroll, useTransform } from "framer-motion";
 
 /**
- * Peakime.com — Single-Page Premium Website (React + Tailwind + Framer Motion)
- * UPDATED: Founder name -> MR Animer; Emails -> sales@peakime.com & support@peakime.com
- * All email actions open Gmail Compose (not mailto:)
+ * Peakime – SEO-optimized single page
+ * - Brand keywords baked into <Helmet> for SEO
+ * - JSON-LD Organization + Website schema
+ * - Accessible nav with working anchor buttons
+ * - Smooth scroll, back-to-top, light/dark toggle
+ * - Minimal Tailwind classes (works even without Tailwind—keeps it readable)
  */
 
-export default function PeakimeSite() {
-  // Theme toggle (dark by default)
+export default function App() {
+  // theme toggle
   const [dark, setDark] = useState(true);
   useEffect(() => {
     const root = document.documentElement;
-    if (dark) root.classList.add("dark"); else root.classList.remove("dark");
+    if (dark) root.classList.add("dark");
+    else root.classList.remove("dark");
   }, [dark]);
 
-  // Back to top button visibility
+  // show back-to-top
   const [showTop, setShowTop] = useState(false);
   useEffect(() => {
-    const onScroll = () => setShowTop(window.scrollY > 300);
+    const onScroll = () => setShowTop(window.scrollY > 320);
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const ref = useRef(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
-  const parallaxY = useTransform(scrollYProgress, [0, 1], [0, -240]);
+  // simple smooth scroll helper
+  const go = (id) => {
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  // parallax for hero background
+  const heroRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: heroRef,
+    offset: ["start end", "end start"],
+  });
+  const y = useTransform(scrollYProgress, [0, 1], [0, -220]);
 
   return (
-    <div ref={ref} className="min-h-screen bg-black text-white dark:bg-black dark:text-white font-sans">
-      {/* NAVBAR */}
-      <nav className="fixed top-0 left-0 w-full bg-black/60 backdrop-blur-md z-50 border-b border-white/10">
-        <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-3">
-          <a href="#home" className="text-xl font-bold tracking-wide text-yellow-400">PEAKIME</a>
-          <ul className="hidden md:flex items-center gap-8 text-sm font-medium">
-            <li><a href="#about" className="hover:text-yellow-400">About</a></li>
-            <li><a href="#mission" className="hover:text-yellow-400">Vision & Mission</a></li>
-            <li><a href="#studios" className="hover:text-yellow-400">Studios & Licensors</a></li>
-            <li><a href="#creators" className="hover:text-yellow-400">Creators</a></li>
-            <li><a href="#community" className="hover:text-yellow-400">Community</a></li>
-            <li><a href="#legal" className="hover:text-yellow-400">Legal</a></li>
-            <li><a href="#contact" className="hover:text-yellow-400">Contact</a></li>
-          </ul>
+    <div className="min-h-screen bg-black text-white selection:bg-yellow-300 selection:text-black">
+      {/* ---------- SEO ---------- */}
+      <Helmet>
+        <html lang="en" />
+        <title>Peakime – Watch Freely. Dream Deeply.</title>
+
+        {/* Primary */}
+        <meta
+          name="description"
+          content="Peakime by PeakCraft Studios Private Limited—India’s home for licensed anime & donghua. Free, legal, high-quality streaming with dubbing & subs. Merchandise and community by Mr Animer."
+        />
+        <meta
+          name="keywords"
+          content="Peakime, Peakimation, PeakCraft Studios Private Limited, Mr Animer, anime India, donghua India, Indian animation, anime merchandise India, otaku merch, figures, collectibles, apparel, licensed anime, Hindi dubbed anime, Telugu dubbed anime, Tamil dubbed anime, subbed anime, streaming platform"
+        />
+        <link rel="canonical" href="https://peakime.com/" />
+
+        {/* Open Graph / Twitter */}
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://peakime.com/" />
+        <meta property="og:title" content="Peakime – Watch Freely. Dream Deeply." />
+        <meta
+          property="og:description"
+          content="Licensed anime & donghua for India. Free, legal, high-quality. Merchandise & community."
+        />
+        <meta property="og:image" content="https://peakime.com/og-cover.jpg" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Peakime – Watch Freely. Dream Deeply." />
+        <meta
+          name="twitter:description"
+          content="Licensed anime & donghua for India. Free, legal, high-quality."
+        />
+        <meta name="twitter:image" content="https://peakime.com/og-cover.jpg" />
+        <meta name="theme-color" content="#111111" />
+
+        {/* JSON-LD: Organization */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            name: "PeakCraft Studios Private Limited",
+            url: "https://peakime.com/",
+            logo: "https://peakime.com/logo192.png",
+            brand: { "@type": "Brand", name: "Peakime", slogan: "Watch Freely. Dream Deeply." },
+            sameAs: [
+              "https://x.com/Peakime",
+              "https://www.instagram.com/peakime"
+            ],
+            contactPoint: [
+              {
+                "@type": "ContactPoint",
+                email: "revanthchowdhary264@gmail.com",
+                contactType: "customer support",
+                areaServed: "IN",
+              },
+            ],
+          })}
+        </script>
+
+        {/* JSON-LD: WebSite + SearchAction */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            url: "https://peakime.com/",
+            name: "Peakime",
+            potentialAction: {
+              "@type": "SearchAction",
+              target: {
+                "@type": "EntryPoint",
+                urlTemplate: "https://peakime.com/?q={search_term_string}",
+              },
+              "query-input": "required name=search_term_string",
+            },
+          })}
+        </script>
+      </Helmet>
+
+      {/* ---------- NAV ---------- */}
+      <header className="fixed inset-x-0 top-0 z-50 bg-black/60 backdrop-blur border-b border-white/10">
+        <div className="mx-auto max-w-7xl px-6 py-3 flex items-center justify-between">
+          <button
+            onClick={() => go("home")}
+            className="text-lg md:text-xl font-extrabold tracking-wide text-yellow-400"
+            aria-label="Go to home"
+          >
+            PEAKIME
+          </button>
+
+          <nav aria-label="primary" className="hidden md:block">
+            <ul className="flex gap-7 text-sm text-gray-300">
+              <li><button onClick={() => go("about")} className="hover:text-yellow-400">About</button></li>
+              <li><button onClick={() => go("mission")} className="hover:text-yellow-400">Mission</button></li>
+              <li><button onClick={() => go("studios")} className="hover:text-yellow-400">Studios</button></li>
+              <li><button onClick={() => go("merch")} className="hover:text-yellow-400">Merch</button></li>
+              <li><button onClick={() => go("community")} className="hover:text-yellow-400">Community</button></li>
+              <li><button onClick={() => go("contact")} className="hover:text-yellow-400">Contact</button></li>
+            </ul>
+          </nav>
+
           <div className="flex items-center gap-3">
-            <button onClick={() => setDark(d => !d)} className="text-xs border border-white/20 px-3 py-1 rounded hover:border-yellow-400 hover:text-yellow-400 transition">
+            <button
+              onClick={() => setDark((d) => !d)}
+              className="text-xs border border-white/20 px-3 py-1 rounded hover:border-yellow-400 hover:text-yellow-400 transition"
+              aria-pressed={dark}
+              aria-label="Toggle color mode"
+            >
               {dark ? "Light" : "Dark"} Mode
             </button>
-            <a href="#coming" className="hidden md:inline-block bg-yellow-400 text-black text-xs font-semibold px-3 py-2 rounded hover:bg-yellow-300">Start Watching Soon</a>
+            <button
+              onClick={() => go("coming")}
+              className="hidden md:inline-block bg-yellow-400 text-black text-xs font-semibold px-3 py-2 rounded hover:bg-yellow-300"
+            >
+              Start Watching Soon
+            </button>
           </div>
         </div>
-      </nav>
+      </header>
 
-      {/* HERO */}
-      <section id="home" className="relative h-[92vh] flex flex-col justify-center items-center text-center overflow-hidden bg-gradient-to-b from-black to-gray-900">
-        <motion.div style={{ y: parallaxY }} className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_50%_10%,rgba(255,255,255,0.12),transparent_60%)]" />
-        <motion.h1 initial={{opacity:0,y:50}} animate={{opacity:1,y:0}} transition={{duration:1}} className="text-5xl md:text-7xl font-extrabold text-yellow-400 mb-6">Stories Beyond Borders.</motion.h1>
-        <motion.p initial={{opacity:0}} animate={{opacity:1}} transition={{delay:0.4,duration:1}} className="text-lg md:text-xl max-w-3xl text-gray-300 mb-8">
-          Discover world-class animation — brought home to India. Watch officially licensed anime and donghua, dubbed and subtitled for everyone, everywhere. <br/>Watch Freely. Dream Deeply.
+      {/* ---------- HERO ---------- */}
+      <section
+        id="home"
+        ref={heroRef}
+        className="relative h-[92vh] flex flex-col items-center justify-center text-center overflow-hidden bg-gradient-to-b from-black to-gray-900"
+      >
+        <motion.div
+          style={{ y }}
+          className="pointer-events-none absolute inset-0 opacity-25 bg-[radial-gradient(1200px_600px_at_50%_0%,rgba(255,255,255,0.12),transparent)]"
+        />
+        <motion.h1
+          initial={{ opacity: 0, y: 26 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="px-6 text-5xl md:text-7xl font-extrabold leading-tight"
+        >
+          Stories Beyond Borders.
+        </motion.h1>
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2, duration: 0.8 }}
+          className="mt-5 max-w-3xl px-6 text-lg md:text-xl text-gray-300"
+        >
+          Peakime by <strong>PeakCraft Studios Private Limited</strong>—India’s home for licensed
+          <em> anime & donghua</em>. Free, legal, high-quality streaming with dubbing & subs.
+          Merchandise and community by <strong>Mr Animer</strong>.
         </motion.p>
-        <div className="flex gap-4">
-          <a href="#coming" className="bg-yellow-400 text-black px-6 py-3 rounded-lg font-semibold hover:bg-yellow-300 transition">Start Watching Soon</a>
-          <a href="#studios" className="border border-yellow-400 px-6 py-3 rounded-lg hover:bg-yellow-400/10 transition">Partner With Us</a>
+        <div className="mt-8 flex gap-4">
+          <button
+            onClick={() => go("coming")}
+            className="bg-yellow-400 text-black px-6 py-3 rounded-lg font-semibold hover:bg-yellow-300 transition"
+          >
+            Start Watching Soon
+          </button>
+          <button
+            onClick={() => go("studios")}
+            className="border border-yellow-400 px-6 py-3 rounded-lg hover:bg-yellow-400/10 transition"
+          >
+            Partner With Us
+          </button>
         </div>
-        <motion.div initial={{opacity:0}} animate={{opacity:0.5}} transition={{delay:1}} className="absolute bottom-6 text-xs text-gray-400">Scroll</motion.div>
+        <p className="absolute bottom-6 text-xs text-gray-400 opacity-75">Scroll</p>
       </section>
 
-      {/* GENERIC SECTION COMPONENTS WITH ALL CONTENT */}
-      <AnimatedSection id="about" title="About Peakime">
-        <Block>
-          Peakime is the flagship brand of <b>PeakCraft Studios Private Limited</b>, created to bring world-class animation closer to Indian audiences.
-        </Block>
-        <Block>
-          We focus on introducing <b>donghua (Chinese animation)</b> and anime to India through <b>official licensing, dubbing, and subtitling</b>, ensuring that fans can experience every story in their own language while preserving its original artistry and emotion.
-        </Block>
-        <Block>
-          Peakime was founded with a simple belief — <b>animation should be free, accessible, and inspiring</b>. Our goal is to give Indian viewers a platform where they can watch legally, enjoy openly, and feel part of a global creative culture.
-        </Block>
-        <Block>
-          We see storytelling as more than entertainment. Every frame, every line, and every voice carries imagination, courage, and meaning. Through Peakime, we aim to <b>connect fans with worlds that ignite creativity and reflection</b>.
-        </Block>
-        <Block>
-          As we grow, our vision extends beyond bringing global titles to India. We plan to <b>develop original Indian animated universes</b>, crafted with the same heart, depth, and discipline that define the world’s most beloved studios.
-        </Block>
-        <Block>
-          Peakime stands for <b>"Stories Beyond Borders"</b> — a bridge between creators and audiences, cultures and emotions, dreams and reality. We are here to make animation in India not just a genre, but a way of life.
-        </Block>
-      </AnimatedSection>
+      {/* ---------- ABOUT ---------- */}
+      <Section id="about" title="About Peakime">
+        Peakime (a PeakCraft Studios Pvt. Ltd. brand) is building India’s most loved destination
+        for <strong>licensed anime, donghua & Indian animation</strong>—with dubs, subs and a
+        thriving creator community.
+      </Section>
 
-      <AnimatedSection id="mission" title="Our Mission">
-        <Block>
-          To make animation a <b>universal experience</b> in India — one that is <b>free to watch, true to its creators, and deeply connected to its audience</b>. We exist to bridge cultures through storytelling, bringing the best of Asian animation to everyone, everywhere, while honoring the authenticity and creative spirit of every artist.
-        </Block>
-      </AnimatedSection>
-
-      <AnimatedSection id="vision" title="Our Vision">
-        <Block>
-          To build <b>India’s most trusted home for animation</b> — where fans discover worlds, connect through stories, and feel inspired to create their own.
-        </Block>
-        <Block>
-          Our vision is to <b>shape the future of Indian animation</b>, introducing licensed global masterpieces today and nurturing <b>original Indian stories and characters</b> for tomorrow.
-        </Block>
-        <Block>
-          Peakime is not just a platform — it’s a movement to <b>redefine how India watches, feels, and dreams through animation.</b>
-        </Block>
-      </AnimatedSection>
-
-      <AnimatedSection id="founder" title="Founder’s Note">
-        <Block>
-          When I started Peakime, it wasn’t just about launching a brand — it was about starting a culture. For years, Indian fans have admired animation from around the world, but access was often limited or scattered. I wanted to change that.
-        </Block>
-        <Block>
-          Peakime was born from a belief that <b>everyone deserves to experience great stories, freely and fully</b>, in their own language, without losing the heart of the original. Animation can move people — it teaches, heals, and inspires. It has the power to change how we see ourselves and the world around us.
-        </Block>
-        <Block>
-          At <b>PeakCraft Studios</b>, we are building this vision step by step. Licensing, dubbing, storytelling, community — each effort brings us closer to creating a world where animation isn’t a niche, but a shared emotion.
-        </Block>
-        <Block>
-          This is just the beginning. It will take time, patience, and the support of dreamers who believe in the same vision. But with every story we bring home, we move one step closer to making animation a way of life in India.
-        </Block>
-        <Block>
-          Thank you for being part of it. Let’s build this world together.
-        </Block>
-        <div className="mt-6 text-yellow-400">– MR Animer<br/>Founder & Co-Director, PeakCraft Studios Private Limited<br/>📧 <GmailLink to="sales@peakime.com" label="sales@peakime.com" /></div>
-      </AnimatedSection>
-
-      <AnimatedSection id="future" title="Our Future">
-        <Block>
-          Every great movement begins with a story — and ours is just getting started.
-        </Block>
-        <Block>
-          Peakime was born from a dream to change how India experiences animation. What began as a bridge between worlds will grow into an ecosystem — where artists, fans, and creators unite to imagine, build, and live within new worlds of storytelling.
-        </Block>
-        <ul className="max-w-5xl mx-auto text-left mt-6 space-y-2 text-gray-300">
-          <li>• <b>Indian voices meet global art</b>, creating something entirely new.</li>
-          <li>• <b>Fans watch freely and creators work proudly</b>, knowing every story is valued.</li>
-          <li>• <b>Animation becomes a shared language</b> — one that inspires, teaches, and connects us all.</li>
+      {/* ---------- MISSION ---------- */}
+      <Section id="mission" title="Vision & Mission">
+        <ul className="list-disc pl-5 space-y-2 text-gray-300">
+          <li>Legal, affordable, high-quality streaming for India.</li>
+          <li>Best-in-class Hindi / Telugu / Tamil dubs and accurate subtitles.</li>
+          <li>Creator-first ecosystem—events, collabs, and opportunities.</li>
+          <li>Transparent licensing that supports original studios.</li>
         </ul>
-        <Block>
-          We’re not here to chase trends. We’re here to shape generations. Through every partnership, every story, and every spark of imagination, Peakime will stand for creativity without limits.
-        </Block>
-        <Block>
-          The world of animation is expanding — and India is ready to take its place at the heart of it.
-        </Block>
-        <div className="mt-6"><b>This is the dawn of something greater.<br/>This is Peakime.<br/>Watch Freely. Dream Deeply.</b></div>
-      </AnimatedSection>
+      </Section>
 
-      <AnimatedSection id="coming" title="Coming Soon">
-        <Block>
-          A new chapter in animation is almost here. At Peakime, we’re preparing to bring you a carefully curated selection of <b>licensed anime and donghua titles</b> — dubbed, subtitled, and ready to watch for free.
-        </Block>
-        <Block>
-          Every story we choose carries something deeper — imagination, courage, friendship, and the power to inspire. We’re working closely with creators, studios, and voice talent to ensure each title is <b>true to its origin</b> and <b>authentic in its local voice</b>.
-        </Block>
-        <Block>
-          Stay tuned. The worlds you’ve been waiting to explore are almost here. <b>Watch Freely. Dream Deeply.</b>
-        </Block>
-      </AnimatedSection>
-
-      <AnimatedSection id="join" title="Join Us">
-        <Block>
-          Every great story begins with a spark — and we believe the next one starts here. At Peakime, we’re not just building a platform; we’re building a community where creativity, passion, and imagination come together.
-        </Block>
-        <Block>
-          Whether you’re a fan, artist, storyteller, or partner, there’s a place for you in our world. Join us as we bring incredible stories to life, connect cultures through animation, and shape the future of how India watches and creates.
-        </Block>
-        <Block>
-          Follow our journey, share your ideas, and grow with us — because the world we’re creating is meant for everyone who believes in the power of storytelling.
-        </Block>
-        <div className="mt-6 font-semibold">Welcome to Peakime. <br/>Watch Freely. Dream Deeply.</div>
-      </AnimatedSection>
-
-      <AnimatedSection id="studios" title="For Studios & Licensors">
-        <Block>
-          At Peakime, we believe that great stories deserve to reach every corner of the world — with authenticity, respect, and creative care.
-        </Block>
-        <Block>
-          We collaborate with <b>animation studios, distributors, and content owners</b> to bring licensed titles to Indian audiences through <b>official streaming, dubbing, and subtitling</b>. Our process ensures that every series we localize maintains its artistic essence while becoming accessible to a new generation of fans.
-        </Block>
-        <ul className="max-w-5xl mx-auto text-left mt-6 space-y-2 text-gray-300">
-          <li>• <b>Cultural fidelity:</b> Adaptations that honor original intent.</li>
-          <li>• <b>Professional localization:</b> Accurate dubbing and translation across major Indian languages.</li>
-          <li>• <b>Transparent collaboration:</b> Legal licensing, clear communication, and complete respect for IP.</li>
-          <li>• <b>Audience growth:</b> Expanding your stories into one of the world’s largest and fastest-growing fan communities.</li>
-        </ul>
-        <Block>
-          If you represent a studio or rights holder interested in working with us, we’d love to connect. Reach out to our licensing team and let’s build something lasting together.
-        </Block>
-        <div className="mt-4">📧 <b>Email:</b> <GmailLink to="sales@peakime.com" label="sales@peakime.com" /><br/>🏢 <b>Company:</b> PeakCraft Studios Private Limited<br/>🌐 <b>www.peakime.com</b></div>
-      </AnimatedSection>
-
-      <AnimatedSection id="legal" title="Legal & Licensing Notice">
-        <Block>
-          Peakime operates under <b>PeakCraft Studios Private Limited</b>, ensuring that every piece of content featured or streamed through our platform is <b>officially licensed or used with direct authorization</b> from its rightful owners.
-        </Block>
-        <Block>
-          We do not host or promote pirated, fan-uploaded, or unauthorized content of any kind. All titles, characters, music, and creative properties remain the intellectual property of their respective studios, creators, and licensors.
-        </Block>
-        <Block>
-          Our team follows a transparent process for acquisition, dubbing, and localization, maintaining strict compliance with legal and industry standards. Each partnership is built on <b>respect for creators, trust with licensors, and authenticity for audiences</b>.
-        </Block>
-      </AnimatedSection>
-
-      <AnimatedSection id="careers" title="Careers / Work With Us">
-        <Block>
-          At Peakime, we believe the future of animation will be written by those who dare to dream differently. We’re building a space where <b>artists, voice actors, writers, translators, and visionaries</b> can collaborate to bring world-class stories to Indian audiences.
-        </Block>
-        <Block>
-          If you’re passionate about anime, donghua, or the power of visual storytelling, we’d love to hear from you.
-        </Block>
-        <div className="mt-4">📧 <b>Send your portfolio or resume to:</b> <GmailLink to="sales@peakime.com" label="sales@peakime.com" /><br/>🏢 <b>PeakCraft Studios Private Limited</b><br/>🌐 <b>www.peakime.com</b></div>
-      </AnimatedSection>
-
-      <AnimatedSection id="community" title="Community / Fan Hub (Coming Soon)">
-        <Block>
-          Animation is more than what we watch — it’s what connects us. The Peakime Community Hub will soon be your space to share fan art, attend watch parties, and connect with other fans. Stay tuned — the world we’re building is almost here.
-        </Block>
-      </AnimatedSection>
-
-      <AnimatedSection id="collab" title="Creators & Collaborations">
-        <Block>
-          At Peakime, we believe that every creator has a story worth telling. Our mission is to help those stories reach audiences across India and beyond — with respect, care, and artistry.
-        </Block>
-        <Block>
-          We’re building a space where independent artists, studios, writers, and animators can collaborate, share ideas, and create together.
-        </Block>
-        <div className="mt-4">📧 <b>Collaboration Contact:</b> <GmailLink to="sales@peakime.com" label="sales@peakime.com" /><br/>🏢 <b>PeakCraft Studios Private Limited</b><br/>🌐 <b>www.peakime.com</b></div>
-      </AnimatedSection>
-
-      <AnimatedSection id="contact" title="Contact & Partnerships">
-        <Block>
-          We’re always open to collaborations that help us bring great stories to more people. Whether you’re a studio, investor, or creator, Peakime welcomes partners who share our passion for storytelling and animation.
-        </Block>
-        <div className="mt-6">
-          <ContactForm />
-          <div className="mt-6 text-gray-300">
-            Or write to us directly: <b><GmailLink to="sales@peakime.com" label="sales@peakime.com" /></b> &nbsp;|&nbsp; <b><GmailLink to="support@peakime.com" label="support@peakime.com" /></b>
-          </div>
+      {/* ---------- STUDIOS ---------- */}
+      <Section id="studios" title="Studios & Licensors">
+        We’re open to partnerships across Japan, China and India.
+        <div className="mt-4 flex flex-wrap gap-3">
+          <CTA href="#contact" label="Talk Licensing" />
+          <CTA href="#contact" label="Dubbing & Subtitling" variant="ghost" />
         </div>
-      </AnimatedSection>
+      </Section>
 
-      <AnimatedSection id="press" title="Press & Media">
-        <Block>
-          Peakime represents a new wave of animation culture in India — introducing licensed anime and donghua to audiences and shaping the foundation for future Indian originals.
-        </Block>
-        <Block>
-          For interviews, press releases, collaborations, or access to official brand materials, contact: 📧 <b>Media Contact:</b> <GmailLink to="sales@peakime.com" label="sales@peakime.com" />
-        </Block>
-      </AnimatedSection>
+      {/* ---------- MERCH ---------- */}
+      <Section id="merch" title="Merch & Collectibles">
+        Figures, apparel, prints and collabs—crafted for Indian otaku.
+        <div className="mt-4 flex flex-wrap gap-3">
+          <CTA href="#coming" label="Shop (coming soon)" />
+          <CTA href="#community" label="Join Community" variant="ghost" />
+        </div>
+      </Section>
 
-      <AnimatedSection id="privacy" title="Privacy Policy">
-        <Block>
-          We do not collect unnecessary personal information. Any data shared through contact forms or email communication is used solely to respond to inquiries or provide updates. We never sell or share user data with third parties.
-        </Block>
-        <Block>
-          By using <b>www.peakime.com</b>, you agree to this policy and its terms.
-        </Block>
-      </AnimatedSection>
+      {/* ---------- COMMUNITY ---------- */}
+      <Section id="community" title="Community & Creators">
+        Join the fan hub, watch parties and creator programs—by <strong>Mr Animer</strong> and the
+        Peakime team.
+        <div className="mt-4">
+          <CTA href="#contact" label="Creator Signup" />
+        </div>
+      </Section>
 
-      <AnimatedSection id="disclaimer" title="Disclaimer">
-        <Block>
-          All content featured on Peakime is either owned by <b>PeakCraft Studios Private Limited</b> or used under official license and copyright permission. Unauthorized reproduction or redistribution is prohibited. All trademarks and characters belong to their respective owners.
-        </Block>
-      </AnimatedSection>
+      {/* ---------- COMING SOON ---------- */}
+      <Section id="coming" title="Coming Soon">
+        Streaming app & store are under active development. Follow our socials for drops and alpha.
+        <div className="mt-4 flex gap-3">
+          <Social href="https://x.com/Peakime" label="X (Twitter)" />
+          <Social href="https://www.instagram.com/peakime" label="Instagram" />
+        </div>
+      </Section>
 
-      <AnimatedSection id="terms" title="Terms of Use">
-        <ul className="max-w-5xl mx-auto text-left space-y-2 text-gray-300">
-          <li>• By using <b>www.peakime.com</b>, you agree to our terms.</li>
-          <li>• Content is for personal, non-commercial use only.</li>
-          <li>• No unauthorized copying or redistribution of licensed materials.</li>
-          <li>• All intellectual property remains with its rightful owner.</li>
-          <li>• These terms are governed by Indian law, under the jurisdiction of Chennai, Tamil Nadu.</li>
-        </ul>
-      </AnimatedSection>
+      {/* ---------- CONTACT ---------- */}
+      <Section id="contact" title="Contact">
+        <p className="text-gray-300">
+          Partnerships, licensing, creators & support—reach us anytime.
+        </p>
+        <div className="mt-4 flex flex-wrap gap-3">
+          <a
+            className="inline-flex items-center justify-center rounded-lg px-5 py-3 bg-yellow-400 text-black font-semibold hover:bg-yellow-300"
+            href="mailto:revanthchowdhary264@gmail.com?subject=Peakime%20Enquiry&body=Hi%20Peakime%20team%2C%0D%0A%0D%0A"
+          >
+            Email Us
+          </a>
+          <a
+            className="inline-flex items-center justify-center rounded-lg px-5 py-3 border border-yellow-400 hover:bg-yellow-400/10"
+            href="tel:+91-0000000000"
+          >
+            Call (placeholder)
+          </a>
+        </div>
+      </Section>
 
-      {/* FOOTER */}
+      {/* ---------- FOOTER ---------- */}
       <footer className="border-t border-white/10 py-10 text-center text-gray-400 text-sm">
-        <p>
-          Peakime is owned and operated by <b>PeakCraft Studios Private Limited</b>, an Indian entertainment company dedicated to building the future of animation through licensed content, cultural collaboration, and original storytelling.
-        </p>
-        <p className="mt-3">© 2025 PeakCraft Studios Private Limited. All Rights Reserved. <br/>Peakime and its logo are trademarks of PeakCraft Studios Pvt. Ltd.</p>
-        <p className="mt-3">📧 Email:&nbsp;
-          <b><GmailLink to="support@peakime.com" label="support@peakime.com" /></b>
-          &nbsp;|&nbsp; 🌐 Website: <b>www.peakime.com</b>
-        </p>
+        <nav className="mb-3 space-x-4">
+          <a className="hover:text-yellow-400" href="#about">About</a>
+          <a className="hover:text-yellow-400" href="#studios">Licensing</a>
+          <a className="hover:text-yellow-400" href="#community">Community</a>
+          <a className="hover:text-yellow-400" href="#contact">Contact</a>
+          <a className="hover:text-yellow-400" href="#coming">App</a>
+        </nav>
+        <p>© {new Date().getFullYear()} PeakCraft Studios Private Limited. All Rights Reserved.</p>
       </footer>
 
-      {/* BACK TO TOP BUTTON */}
-      <motion.button
-        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: showTop ? 1 : 0, scale: showTop ? 1 : 0.9 }}
-        transition={{ duration: 0.3 }}
-        className="fixed bottom-6 right-6 z-50 bg-yellow-400 text-black px-4 py-3 rounded-full shadow-lg hover:bg-yellow-300"
-        aria-label="Back to top"
-      >↑</motion.button>
+      {/* back-to-top */}
+      {showTop && (
+        <button
+          aria-label="Back to top"
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          className="fixed bottom-6 right-6 z-50 bg-yellow-400 text-black px-4 py-3 rounded-full shadow-lg hover:bg-yellow-300"
+        >
+          ↑
+        </button>
+      )}
     </div>
   );
 }
 
-function AnimatedSection({ id, title, children }) {
+/* ------------------ Small presentational helpers ------------------ */
+
+function Section({ id, title, children }) {
   return (
-    <section id={id} className="relative overflow-hidden text-center">
-      {/* Top separator */}
-      <motion.div aria-hidden className="pointer-events-none absolute top-0 left-0 h-24 w-full bg-gradient-to-b from-black to-transparent" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ amount: 0.2, once: true }} transition={{ duration: 0.8 }} />
-
-      <motion.div className="py-24 px-6" initial={{ opacity: 0, y: 80 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ amount: 0.3 }} transition={{ duration: 1 }}>
-        <h2 className="text-4xl md:text-5xl font-bold text-yellow-400 mb-8 text-center">{title}</h2>
-        <div className="max-w-5xl mx-auto text-lg md:text-xl text-gray-300 leading-relaxed space-y-6 text-center">
-          {children}
-        </div>
-      </motion.div>
-
-      {/* Bottom separator */}
-      <motion.div aria-hidden className="pointer-events-none absolute bottom-0 left-0 h-24 w-full bg-gradient-to-t from-black to-transparent" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ amount: 0.2, once: true }} transition={{ duration: 0.8 }} />
-
-      {/* Ambient vignette */}
-      <motion.div className="absolute inset-0 -z-10 opacity-10" initial={{ opacity: 0 }} whileInView={{ opacity: 0.1 }} transition={{ duration: 1.2 }} style={{ background: "radial-gradient(60% 40% at 50% 0%, rgba(255,255,255,0.06) 0%, rgba(0,0,0,0) 100%)" }} />
+    <section id={id} className="px-6 py-20 md:py-24 border-t border-white/10">
+      <div className="mx-auto max-w-5xl">
+        <h2 className="text-2xl md:text-4xl font-extrabold text-yellow-400">{title}</h2>
+        <div className="mt-4 text-gray-300 leading-relaxed">{children}</div>
+      </div>
     </section>
   );
 }
 
-function Block({ children }) {
-  return <p className="max-w-5xl mx-auto text-gray-300">{children}</p>;
-}
-
-/** Gmail Compose helper
- * Opens Gmail compose window with prefilled fields.
- * Usage: <GmailLink to="sales@peakime.com" label="sales@peakime.com" subject="Hello" body="Message"/>
- */
-function GmailLink({ to, cc, bcc, subject = "", body = "", label }) {
-  const params = new URLSearchParams();
-  if (to) params.set("to", to);
-  if (cc) params.set("cc", cc);
-  if (bcc) params.set("bcc", bcc);
-  if (subject) params.set("su", subject);
-  if (body) params.set("body", body);
-  const href = `https://mail.google.com/mail/?view=cm&fs=1&${params.toString()}`;
+function CTA({ href = "#", label, variant = "solid" }) {
+  const base =
+    "inline-flex items-center justify-center rounded-lg px-5 py-3 font-semibold transition";
+  const solid = "bg-yellow-400 text-black hover:bg-yellow-300";
+  const ghost = "border border-yellow-400 hover:bg-yellow-400/10";
+  const cls = `${base} ${variant === "ghost" ? ghost : solid}`;
   return (
-    <a href={href} target="_blank" rel="noreferrer" className="underline hover:text-yellow-300">
-      {label || to}
+    <a className={cls} href={href} onClick={(e) => href.startsWith("#") && e.preventDefault()}>
+      {href.startsWith("#") ? (
+        <span onClick={() => document.querySelector(href)?.scrollIntoView({ behavior: "smooth" })}>
+          {label}
+        </span>
+      ) : (
+        label
+      )}
     </a>
   );
 }
 
-function ContactForm() {
-  // Gmail compose fallback (works without backend)
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [message, setMessage] = useState("");
-
-  const subject = `Peakime Website Inquiry from ${name || "Visitor"}`;
-  const body = `${message}\n\nFrom: ${name} (${email})`;
-  const composeHref = (() => {
-    const params = new URLSearchParams();
-    params.set("to", "sales@peakime.com");
-    params.set("bcc", "support@peakime.com");
-    if (subject) params.set("su", subject);
-    if (body) params.set("body", body);
-    return `https://mail.google.com/mail/?view=cm&fs=1&${params.toString()}`;
-  })();
-
+function Social({ href, label }) {
   return (
-    <form className="max-w-3xl mx-auto grid grid-cols-1 gap-4 text-left" onSubmit={(e)=>e.preventDefault()}>
-      <label className="text-sm text-gray-400">Name
-        <input value={name} onChange={e=>setName(e.target.value)} className="w-full mt-1 bg-black border border-white/20 rounded px-3 py-2 focus:outline-none focus:border-yellow-400" placeholder="Your name" />
-      </label>
-      <label className="text-sm text-gray-400">Email
-        <input type="email" value={email} onChange={e=>setEmail(e.target.value)} className="w-full mt-1 bg-black border border-white/20 rounded px-3 py-2 focus:outline-none focus:border-yellow-400" placeholder="you@example.com" />
-      </label>
-      <label className="text-sm text-gray-400">Message
-        <textarea value={message} onChange={e=>setMessage(e.target.value)} rows={5} className="w-full mt-1 bg-black border border-white/20 rounded px-3 py-2 focus:outline-none focus:border-yellow-400" placeholder="Tell us how you'd like to collaborate" />
-      </label>
-      <div className="flex gap-3 pt-2">
-        <a href={composeHref} target="_blank" rel="noreferrer" className="bg-yellow-400 text-black px-5 py-3 rounded font-semibold hover:bg-yellow-300">Send via Gmail</a>
-        <a href="#home" className="border border-yellow-400 px-5 py-3 rounded hover:bg-yellow-400/10">Back to Home</a>
-      </div>
-      <p className="text-xs text-gray-500">Tip: If you are not logged into Gmail in this browser, you'll be prompted to sign in.</p>
-    </form>
+    <a
+      className="inline-flex items-center justify-center rounded-lg px-5 py-3 border border-white/20 hover:border-yellow-400 hover:text-yellow-400"
+      href={href}
+      target="_blank"
+      rel="noreferrer"
+      aria-label={label}
+      title={label}
+    >
+      {label}
+    </a>
   );
 }
